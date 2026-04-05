@@ -86,7 +86,7 @@ export default function PhonePreview({ message, imageUrl, flyerUrl, flyerSlug }:
                 {flyerUrl && (
                   <div className="mt-1.5 bg-[#004035] rounded-lg px-2 py-1.5">
                     <p className="text-[#4FF07F] text-[9px] font-medium truncate">
-                      {flyerSlug ? `zapzap.app/f/${flyerSlug}` : 'link do folheto'}
+                      {flyerSlug ? `${typeof window !== 'undefined' ? window.location.origin : ''}/f/${flyerSlug}` : 'link do folheto'}
                     </p>
                   </div>
                 )}

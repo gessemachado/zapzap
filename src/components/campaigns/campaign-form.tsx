@@ -280,7 +280,7 @@ export default function CampaignForm({ groups }: Props) {
                 </label>
               )}
               {flyerSlug && (
-                <p className="text-xs text-[#25D366] mt-1 truncate">zapzap.app/f/{flyerSlug}</p>
+                <p className="text-xs text-[#25D366] mt-1 truncate">{typeof window !== 'undefined' ? window.location.origin : ''}/f/{flyerSlug}</p>
               )}
             </div>
           </div>
