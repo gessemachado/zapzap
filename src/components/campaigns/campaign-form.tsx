@@ -280,7 +280,22 @@ export default function CampaignForm({ groups }: Props) {
                 </label>
               )}
               {flyerSlug && (
-                <p className="text-xs text-[#25D366] mt-1 truncate">{typeof window !== 'undefined' ? window.location.origin : ''}/f/{flyerSlug}</p>
+                <div className="mt-1.5 flex items-center gap-2">
+                  <p className="text-xs text-[#25D366] truncate flex-1">{typeof window !== 'undefined' ? window.location.origin : ''}/f/{flyerSlug}</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const params = new URLSearchParams({ url: flyerUrl, name, message })
+                      window.open(`/f/preview?${params}`, '_blank')
+                    }}
+                    className="flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-lg bg-[#25D366]/15 text-[#4FF07F] text-xs hover:bg-[#25D366]/25 transition-colors"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-3 h-3">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    Pré-visualizar
+                  </button>
+                </div>
               )}
             </div>
           </div>

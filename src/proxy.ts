@@ -32,7 +32,8 @@ export async function proxy(request: NextRequest) {
   const isAuthPage = request.nextUrl.pathname.startsWith('/login')
   const isPublicRoute =
     request.nextUrl.pathname.startsWith('/f/') ||
-    request.nextUrl.pathname.startsWith('/api/webhook')
+    request.nextUrl.pathname.startsWith('/api/webhook') ||
+    request.nextUrl.pathname === '/f/preview'
 
   if (!user && !isAuthPage && !isPublicRoute) {
     const url = request.nextUrl.clone()
