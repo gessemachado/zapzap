@@ -33,7 +33,7 @@ export async function POST(
     return NextResponse.json({ error: 'Campanha não encontrada.' }, { status: 404 })
   }
 
-  if (campaign.status !== 'draft') {
+  if (!['draft', 'paused'].includes(campaign.status)) {
     return NextResponse.json({ error: 'Campanha já foi enviada ou está em andamento.' }, { status: 409 })
   }
 
@@ -129,6 +129,21 @@ export async function POST(
     // Rate limiting
     if (settings.send_interval_ms > 0) {
       await new Promise((r) => setTimeout(r, settings.send_interval_ms))
+    }
+
+    // Check if campaign was paused externally
+    const { data: check } = await supabase
+      .from('campaigns')
+      .select('status')
+      .eq('id', campaignId)
+      .single()
+
+    if (check?.status === 'paused') {
+      await supabase.from('campaigns').update({
+        sent_count: sentCount,
+        failed_count: failedCount,
+      }).eq('id', campaignId)
+      return NextResponse.json({ sent: sentCount, failed: failedCount, paused: true })
     }
   }
 

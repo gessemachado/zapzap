@@ -1,36 +1,46 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import type { Campaign } from '@/types'
-
-const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }> = {
-  draft: { label: 'Rascunho', color: '#bbcbb9', bg: '#353534' },
-  sending: { label: 'Enviando', color: '#fbbf24', bg: '#fbbf24/15' },
-  done: { label: 'Concluída', color: '#4FF07F', bg: '#25D366/15' },
-  failed: { label: 'Falhou', color: '#ffb4ab', bg: '#93000a/30' },
-}
+import { Plus, Copy, RefreshCw } from 'lucide-react'
+import CampaignActions from '@/components/campaigns/campaign-actions'
 
 function StatusBadge({ status }: { status: string }) {
-  const s = STATUS_LABELS[status] ?? STATUS_LABELS.draft
+  if (status === 'sending') {
+    return (
+      <span className="px-3 py-1 bg-blue-950 text-blue-400 text-[10px] font-bold rounded-full flex items-center gap-1.5 uppercase tracking-wider w-fit">
+        <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" />
+        Em Andamento
+      </span>
+    )
+  }
+  if (status === 'done') {
+    return (
+      <span className="px-3 py-1 bg-[#0d5526] text-[#84c88d] text-[10px] font-bold rounded-full flex items-center gap-1.5 uppercase tracking-wider w-fit">
+        <span className="w-1.5 h-1.5 bg-[#84c88d] rounded-full" />
+        Concluída
+      </span>
+    )
+  }
+  if (status === 'paused') {
+    return (
+      <span className="px-3 py-1 bg-amber-950 text-amber-400 text-[10px] font-bold rounded-full flex items-center gap-1.5 uppercase tracking-wider w-fit">
+        <span className="w-1.5 h-1.5 bg-amber-400 rounded-full" />
+        Pausada
+      </span>
+    )
+  }
+  if (status === 'failed') {
+    return (
+      <span className="px-3 py-1 bg-[#93000a] text-[#ffdad6] text-[10px] font-bold rounded-full flex items-center gap-1.5 uppercase tracking-wider w-fit">
+        <span className="w-1.5 h-1.5 bg-[#ffdad6] rounded-full" />
+        Com Falhas
+      </span>
+    )
+  }
   return (
-    <span
-      className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium"
-      style={{ color: s.color, backgroundColor: `${s.color}20` }}
-    >
-      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: s.color }} />
-      {s.label}
+    <span className="px-3 py-1 bg-zinc-800 text-zinc-400 text-[10px] font-bold rounded-full uppercase tracking-wider w-fit">
+      Rascunho
     </span>
-  )
-}
-
-function ProgressBar({ value, max }: { value: number; max: number }) {
-  const pct = max > 0 ? Math.round((value / max) * 100) : 0
-  return (
-    <div className="flex items-center gap-2">
-      <div className="flex-1 h-1.5 bg-[#353534] rounded-full overflow-hidden">
-        <div className="h-full bg-[#25D366] rounded-full" style={{ width: `${pct}%` }} />
-      </div>
-      <span className="text-xs text-[#bbcbb9]">{pct}%</span>
-    </div>
   )
 }
 
@@ -48,102 +58,158 @@ export default async function CampanhasPage() {
     active: campaigns.filter((c) => c.status === 'sending').length,
     done: campaigns.filter((c) => c.status === 'done').length,
     draft: campaigns.filter((c) => c.status === 'draft').length,
+    failed: campaigns.filter((c) => c.status === 'failed').length,
   }
 
   return (
-    <div>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'Manrope, sans-serif' }}>
-            Campanhas
-          </h1>
-          <p className="text-sm text-[#bbcbb9] mt-0.5">{stats.total} campanhas no total</p>
+    <div className="min-h-screen pb-12">
+      <header className="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 bg-[#131313]/80 backdrop-blur-md h-20 flex justify-between items-center px-8 border-b border-white/5">
+        <div className="flex items-center gap-4">
+          <h1 className="text-2xl font-bold font-headline text-white tracking-tight">Campanhas</h1>
         </div>
-        <Link
-          href="/campanhas/nova"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-[#003915]"
-          style={{ background: 'linear-gradient(135deg, #4FF07F 0%, #25D366 100%)' }}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
-            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Nova campanha
-        </Link>
-      </div>
-
-      {/* Summary cards */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        {[
-          { label: 'Total', value: stats.total, color: '#bbcbb9' },
-          { label: 'Enviando', value: stats.active, color: '#fbbf24' },
-          { label: 'Concluídas', value: stats.done, color: '#4FF07F' },
-          { label: 'Rascunhos', value: stats.draft, color: '#bbcbb9' },
-        ].map((s) => (
-          <div key={s.label} className="bg-[#1c1b1b] rounded-xl p-4">
-            <p className="text-sm text-[#bbcbb9]">{s.label}</p>
-            <p className="text-2xl font-bold mt-1" style={{ color: s.color, fontFamily: 'Manrope, sans-serif' }}>
-              {s.value}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      {/* List */}
-      {campaigns.length === 0 ? (
-        <div className="bg-[#1c1b1b] rounded-xl flex flex-col items-center justify-center py-20 text-center">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1} className="w-12 h-12 text-[#3c4a3d] mb-3">
-            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
-          </svg>
-          <p className="text-[#bbcbb9]">Nenhuma campanha ainda</p>
-          <p className="text-[#3c4a3d] text-sm mt-1 mb-6">Crie sua primeira campanha para começar a enviar mensagens</p>
+        <div className="flex items-center gap-4">
           <Link
             href="/campanhas/nova"
-            className="px-6 py-2.5 rounded-lg text-sm font-semibold text-[#003915]"
-            style={{ background: 'linear-gradient(135deg, #4FF07F 0%, #25D366 100%)' }}
+            className="metric-gradient text-[#003915] px-5 py-2.5 rounded-lg font-bold flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all text-sm"
           >
-            Criar campanha
+            <Plus className="w-4 h-4" strokeWidth={2.5} />
+            Nova Campanha
           </Link>
         </div>
-      ) : (
-        <div className="space-y-3">
-          {campaigns.map((c) => (
-            <div key={c.id} className="bg-[#1c1b1b] rounded-xl p-5 hover:bg-[#201f1f] transition-colors">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-1">
-                    <h3 className="text-white font-semibold truncate" style={{ fontFamily: 'Manrope, sans-serif' }}>
+      </header>
+
+      <div className="pt-28">
+        <div className="flex flex-wrap items-center justify-between gap-6 mb-8">
+          <nav className="flex gap-1 p-1 bg-[#0e0e0e] rounded-xl">
+            {[
+              { label: 'Todas', count: stats.total, active: true },
+              { label: 'Em Andamento', count: stats.active, active: false },
+              { label: 'Concluídas', count: stats.done, active: false },
+              { label: 'Rascunhos', count: stats.draft, active: false },
+              { label: 'Falhas', count: stats.failed, active: false },
+            ].map((tab) => (
+              <button
+                key={tab.label}
+                className={`px-5 py-2 text-sm font-medium rounded-lg transition-all ${
+                  tab.active
+                    ? 'font-semibold text-white bg-[#353534]'
+                    : 'text-zinc-500 hover:text-white'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+          <div className="flex items-center gap-2 px-4 py-2 bg-[#201F1F] rounded-lg cursor-pointer hover:bg-[#2A2A2A] transition-all">
+            <span className="text-xs font-medium text-zinc-400">Ordenar por:</span>
+            <span className="text-xs font-bold text-white">Mais recente</span>
+          </div>
+        </div>
+
+        {campaigns.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="w-16 h-16 rounded-full bg-[#201F1F] flex items-center justify-center mb-4">
+              <Plus className="w-8 h-8 text-zinc-600" />
+            </div>
+            <p className="text-zinc-400 font-medium mb-2">Nenhuma campanha criada</p>
+            <p className="text-zinc-600 text-sm mb-6">Crie sua primeira campanha para começar a enviar mensagens</p>
+            <Link
+              href="/campanhas/nova"
+              className="metric-gradient text-[#003915] px-6 py-2.5 rounded-lg font-bold text-sm"
+            >
+              Criar campanha
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {campaigns.map((c) => {
+              const pct = c.total_contacts > 0 ? Math.round((c.sent_count / c.total_contacts) * 100) : 0
+              const cost = Number(c.estimated_cost ?? 0).toFixed(2)
+
+              return (
+                <div key={c.id} className="bg-[#201F1F] rounded-xl p-5 flex flex-col gap-4 group">
+                  <div className="flex justify-between items-start">
+                    <StatusBadge status={c.status} />
+                    <div className="w-5" />
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-bold text-white leading-tight mb-1 group-hover:text-[#4FF07F] transition-colors">
                       {c.name}
                     </h3>
-                    <StatusBadge status={c.status} />
-                  </div>
-                  <div className="flex items-center gap-4 text-xs text-[#bbcbb9] mb-3">
-                    <span>
+                    <span className="px-2.5 py-0.5 bg-zinc-500/10 text-zinc-500 text-[10px] font-bold rounded-md uppercase">
                       {c.audience_type === 'all'
                         ? 'Todos os contatos'
                         : c.audience_type === 'group'
                         ? 'Grupo específico'
                         : 'Seleção manual'}
                     </span>
-                    <span>{c.total_contacts} contatos</span>
-                    <span>R$ {Number(c.estimated_cost).toFixed(2)}</span>
-                    <span>{new Date(c.created_at).toLocaleDateString('pt-BR')}</span>
                   </div>
-                  {c.status !== 'draft' && (
-                    <ProgressBar value={c.sent_count} max={c.total_contacts} />
+
+                  {c.status !== 'draft' ? (
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-zinc-400 font-medium">Progresso</span>
+                        <span className="text-white font-bold">
+                          {c.sent_count}/{c.total_contacts} ({pct}%)
+                        </span>
+                      </div>
+                      <div className="w-full h-1.5 bg-[#0e0e0e] rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full metric-gradient ${c.status === 'failed' ? 'bg-[#ffb4ab]' : ''}`}
+                          style={{ width: `${pct}%`, background: c.status === 'failed' ? '#ffb4ab' : undefined }}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="py-2">
+                      <p className="text-xs text-zinc-500 leading-relaxed italic">Campanha não enviada</p>
+                      <div className="mt-3 w-full h-1.5 border border-dashed border-zinc-700 rounded-full" />
+                    </div>
                   )}
+
+                  <div className="grid grid-cols-3 gap-2 py-3 border-y border-white/5">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-tighter">Enviados</span>
+                      <span className="text-sm font-bold text-white">{c.sent_count}</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-tighter">Total</span>
+                      <span className="text-sm font-bold text-white">{c.total_contacts}</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-tighter">Custo</span>
+                      <span className="text-sm font-bold text-[#4FF07F]">R$ {cost}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Link
+                      href={`/campanhas/${c.id}`}
+                      className="flex-1 bg-[#353534] hover:bg-white/10 text-white text-xs font-bold py-2.5 rounded-lg transition-all text-center"
+                    >
+                      Ver detalhes
+                    </Link>
+                    {c.status === 'done' && (
+                      <button className="flex-1 bg-[#353534] hover:bg-white/10 text-zinc-400 hover:text-white text-xs font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all">
+                        <Copy className="w-3.5 h-3.5" />
+                        Duplicar
+                      </button>
+                    )}
+                    {c.status === 'failed' && (
+                      <button className="flex-1 bg-[#ffb4ab]/10 hover:bg-[#ffb4ab]/20 text-[#ffb4ab] text-xs font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all">
+                        <RefreshCw className="w-3.5 h-3.5" />
+                        Reenviar falhas
+                      </button>
+                    )}
+                    <CampaignActions id={c.id} status={c.status} />
+                  </div>
                 </div>
-                <Link
-                  href={`/campanhas/${c.id}`}
-                  className="flex-shrink-0 px-4 py-2 rounded-lg text-xs text-[#bbcbb9] border border-[#3c4a3d] hover:border-[#25D366] hover:text-white transition-colors"
-                >
-                  Detalhes
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+              )
+            })}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

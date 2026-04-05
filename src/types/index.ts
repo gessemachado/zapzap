@@ -25,7 +25,7 @@ export type Campaign = {
   flyer_slug: string | null
   audience_type: 'all' | 'group' | 'manual'
   audience_group_id: string | null
-  status: 'draft' | 'sending' | 'done' | 'failed'
+  status: 'draft' | 'sending' | 'paused' | 'done' | 'failed'
   total_contacts: number
   sent_count: number
   delivered_count: number

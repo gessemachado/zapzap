@@ -4,6 +4,17 @@ import { useCallback, useEffect, useState } from 'react'
 import type { Contact, ContactGroup } from '@/types'
 import ContactModal from './contact-modal'
 import ImportModal from './import-modal'
+import {
+  Search,
+  Plus,
+  FileSpreadsheet,
+  Edit2,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Users,
+} from 'lucide-react'
 
 type Props = {
   initialGroups: ContactGroup[]
@@ -26,7 +37,6 @@ export default function ContactsClient({ initialGroups }: Props) {
   const [showGroups, setShowGroups] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
 
-  // Groups management state
   const [newGroupName, setNewGroupName] = useState('')
   const [newGroupColor, setNewGroupColor] = useState(GROUP_COLORS[0])
   const [editGroup, setEditGroup] = useState<ContactGroup | null>(null)
@@ -83,178 +93,151 @@ export default function ContactsClient({ initialGroups }: Props) {
   }
 
   return (
-    <div>
-      {/* Page header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'Manrope, sans-serif' }}>
-            Contatos
-          </h1>
-          <p className="text-sm text-[#bbcbb9] mt-0.5">{contacts.length} contatos encontrados</p>
+    <div className="min-h-screen pb-12">
+      <header className="fixed top-0 right-0 w-[calc(100%-16rem)] h-20 bg-[#131313]/80 backdrop-blur-md flex justify-between items-center px-8 z-40 border-b border-white/5">
+        <div className="flex items-center gap-4">
+          <h1 className="font-headline font-bold text-2xl text-white">Contatos</h1>
         </div>
-        <div className="flex gap-3">
-          <button
-            onClick={() => setShowGroups(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm text-[#bbcbb9] border border-[#3c4a3d] hover:border-[#25D366] hover:text-white transition-colors"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-4 h-4">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-            Grupos
-          </button>
+        <div className="flex items-center gap-3">
           <button
             onClick={() => setShowImport(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm text-[#bbcbb9] border border-[#3c4a3d] hover:border-[#25D366] hover:text-white transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#353534] text-white font-semibold hover:opacity-80 transition-opacity active:scale-95 text-sm"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-4 h-4">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="17 8 12 3 7 8" />
-              <line x1="12" y1="3" x2="12" y2="15" />
-            </svg>
+            <FileSpreadsheet className="w-4 h-4 text-[#4FF07F]" />
             Importar Excel
           </button>
           <button
             onClick={() => { setEditContact(null); setShowModal(true) }}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-[#003915]"
-            style={{ background: 'linear-gradient(135deg, #4FF07F 0%, #25D366 100%)' }}
+            className="metric-gradient flex items-center gap-2 px-6 py-2.5 rounded-lg text-[#003915] font-bold hover:opacity-90 transition-opacity active:scale-95 shadow-lg shadow-[#4FF07F]/10 text-sm"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            Novo contato
+            <Plus className="w-4 h-4" strokeWidth={2.5} />
+            Novo Contato
           </button>
         </div>
-      </div>
+      </header>
 
-      {/* Filters */}
-      <div className="flex gap-3 mb-5">
-        <div className="relative flex-1 max-w-sm">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-4 h-4 text-[#3c4a3d] absolute left-3 top-1/2 -translate-y-1/2">
-            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-          </svg>
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por nome ou telefone..."
-            className="w-full pl-9 pr-4 py-2.5 bg-[#1c1b1b] text-white rounded-lg text-sm outline-none focus:ring-1 focus:ring-[#25D366] placeholder:text-[#3c4a3d]"
-          />
+      <div className="pt-28">
+        <div className="flex gap-4 mb-8">
+          <div className="flex-1 relative group">
+            <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-[#4FF07F] transition-colors" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-[#201F1F] border-none rounded-lg py-3.5 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:ring-2 focus:ring-[#4FF07F]/20 transition-all text-sm outline-none"
+              placeholder="Buscar por nome ou número..."
+            />
+          </div>
+          <div className="w-64 relative">
+            <select
+              value={filterGroup}
+              onChange={(e) => setFilterGroup(e.target.value)}
+              className="w-full bg-[#201F1F] border-none rounded-lg py-3.5 pl-4 pr-10 text-white appearance-none focus:ring-2 focus:ring-[#4FF07F]/20 transition-all text-sm outline-none"
+            >
+              <option value="">Todos os status</option>
+              <option value="">Ativo</option>
+              <option value="">Inativo</option>
+              {groups.map((g) => (
+                <option key={g.id} value={g.id}>{g.name}</option>
+              ))}
+            </select>
+          </div>
+          <button
+            onClick={() => setShowGroups(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#201F1F] text-zinc-400 hover:text-white hover:bg-[#2A2A2A] transition-colors text-sm font-medium"
+          >
+            <Users className="w-4 h-4" />
+            Grupos
+          </button>
         </div>
 
-        <select
-          value={filterGroup}
-          onChange={(e) => setFilterGroup(e.target.value)}
-          className="bg-[#1c1b1b] text-[#bbcbb9] rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-[#25D366] min-w-[160px]"
-        >
-          <option value="">Todos os grupos</option>
-          {groups.map((g) => (
-            <option key={g.id} value={g.id}>{g.name}</option>
-          ))}
-        </select>
-      </div>
-
-      {/* Table */}
-      <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
-        {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="w-6 h-6 border-2 border-[#25D366] border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : contacts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1} className="w-12 h-12 text-[#3c4a3d] mb-3">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-            <p className="text-[#bbcbb9] text-sm">Nenhum contato encontrado</p>
-            <p className="text-[#3c4a3d] text-xs mt-1">Adicione contatos ou importe via Excel</p>
-          </div>
-        ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-[#3c4a3d]/20">
-                <th className="px-5 py-3.5 text-left text-xs font-medium text-[#bbcbb9] uppercase tracking-wider">Nome</th>
-                <th className="px-5 py-3.5 text-left text-xs font-medium text-[#bbcbb9] uppercase tracking-wider">Telefone</th>
-                <th className="px-5 py-3.5 text-left text-xs font-medium text-[#bbcbb9] uppercase tracking-wider">Grupos</th>
-                <th className="px-5 py-3.5 text-left text-xs font-medium text-[#bbcbb9] uppercase tracking-wider">Status</th>
-                <th className="px-5 py-3.5 text-right text-xs font-medium text-[#bbcbb9] uppercase tracking-wider">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {contacts.map((contact) => (
-                <tr key={contact.id} className="border-b border-[#3c4a3d]/10 hover:bg-[#201f1f] transition-colors">
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#25D366]/20 flex items-center justify-center flex-shrink-0">
-                        <span className="text-[#25D366] text-xs font-semibold">
-                          {contact.name.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <span className="text-white font-medium">{contact.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-5 py-3.5 text-[#bbcbb9] font-mono text-xs">
-                    {contact.phone}
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <div className="flex flex-wrap gap-1">
-                      {(contact.groups ?? []).map((g) => (
-                        <span
-                          key={g.id}
-                          className="px-2 py-0.5 rounded-full text-xs font-medium text-[#131313]"
-                          style={{ backgroundColor: g.color }}
+        <div className="bg-[#201F1F] rounded-xl overflow-hidden shadow-2xl">
+          <div className="overflow-x-auto">
+            {loading ? (
+              <div className="flex items-center justify-center py-16">
+                <div className="w-6 h-6 border-2 border-[#4FF07F] border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : contacts.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <Users className="w-12 h-12 text-zinc-700 mb-3" strokeWidth={1} />
+                <p className="text-zinc-400 text-sm">Nenhum contato encontrado</p>
+                <p className="text-zinc-600 text-xs mt-1">Adicione contatos ou importe via Excel</p>
+              </div>
+            ) : (
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[#1C1B1B] border-b border-[#3c4a3d]/10">
+                    <th className="py-4 px-6 w-12">
+                      <input className="rounded border-zinc-700 bg-[#353534] text-[#4FF07F] focus:ring-[#4FF07F]/20" type="checkbox" />
+                    </th>
+                    <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500">Nome</th>
+                    <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500">Número WhatsApp</th>
+                    <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500">Status</th>
+                    <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500">Data de Cadastro</th>
+                    <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-zinc-500 text-right">Ações</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#3c4a3d]/5">
+                  {contacts.map((contact) => (
+                    <tr key={contact.id} className="hover:bg-[#353534] transition-colors group">
+                      <td className="py-4 px-6">
+                        <input className="rounded border-zinc-700 bg-[#1C1B1B] text-[#4FF07F] focus:ring-[#4FF07F]/20" type="checkbox" />
+                      </td>
+                      <td className="py-4 px-6 font-semibold text-white">{contact.name}</td>
+                      <td className="py-4 px-6 text-zinc-400 font-mono text-sm">{contact.phone}</td>
+                      <td className="py-4 px-6">
+                        {contact.active ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#0d5526] text-[#84c88d]">
+                            Ativo
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#353534] text-zinc-400">
+                            Inativo
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-4 px-6 text-zinc-500 text-sm">
+                        {new Date(contact.created_at ?? '').toLocaleDateString('pt-BR')}
+                      </td>
+                      <td className="py-4 px-6 text-right space-x-1">
+                        <button
+                          onClick={() => { setEditContact(contact); setShowModal(true) }}
+                          className="p-2 text-zinc-500 hover:text-white transition-colors"
                         >
-                          {g.name}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      contact.active
-                        ? 'bg-[#25D366]/15 text-[#4FF07F]'
-                        : 'bg-[#353534] text-[#bbcbb9]'
-                    }`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${contact.active ? 'bg-[#4FF07F]' : 'bg-[#bbcbb9]'}`} />
-                      {contact.active ? 'Ativo' : 'Inativo'}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => { setEditContact(contact); setShowModal(true) }}
-                        className="p-1.5 rounded-lg text-[#bbcbb9] hover:text-white hover:bg-[#353534] transition-colors"
-                        title="Editar"
-                      >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-4 h-4">
-                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => setDeleteConfirm(contact.id)}
-                        className="p-1.5 rounded-lg text-[#bbcbb9] hover:text-[#ffb4ab] hover:bg-[#93000a]/20 transition-colors"
-                        title="Excluir"
-                      >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-4 h-4">
-                          <polyline points="3 6 5 6 21 6" />
-                          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                          <path d="M10 11v6M14 11v6" />
-                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-                        </svg>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => setDeleteConfirm(contact.id)}
+                          className="p-2 text-zinc-500 hover:text-[#ffb4ab] transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          <div className="bg-[#1C1B1B] px-8 py-4 flex items-center justify-between">
+            <p className="text-sm text-zinc-500">
+              Mostrando <span className="text-white font-bold">{contacts.length}</span> contatos
+            </p>
+            <div className="flex items-center gap-2">
+              <button className="p-2 rounded-lg hover:bg-[#353534] text-zinc-400 hover:text-white transition-all disabled:opacity-30" disabled>
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <div className="flex items-center gap-1">
+                <button className="w-8 h-8 rounded-lg bg-[#4FF07F] text-[#003915] font-bold text-sm">1</button>
+              </div>
+              <button className="p-2 rounded-lg hover:bg-[#353534] text-zinc-400 hover:text-white transition-all">
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Contact Modal */}
       {showModal && (
         <ContactModal
           contact={editContact}
@@ -264,7 +247,6 @@ export default function ContactsClient({ initialGroups }: Props) {
         />
       )}
 
-      {/* Import Modal */}
       {showImport && (
         <ImportModal
           groups={groups}
@@ -273,22 +255,21 @@ export default function ContactsClient({ initialGroups }: Props) {
         />
       )}
 
-      {/* Delete confirm dialog */}
       {deleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
-          <div className="bg-[#1c1b1b] rounded-xl w-full max-w-sm p-6 shadow-xl">
-            <h3 className="text-white font-semibold mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>Excluir contato?</h3>
-            <p className="text-sm text-[#bbcbb9] mb-6">Esta ação não pode ser desfeita.</p>
+          <div className="bg-[#1C1B1B] rounded-xl w-full max-w-sm p-6 shadow-xl">
+            <h3 className="text-white font-semibold mb-2 font-headline">Excluir contato?</h3>
+            <p className="text-sm text-zinc-400 mb-6">Esta ação não pode ser desfeita.</p>
             <div className="flex gap-3">
               <button
                 onClick={() => setDeleteConfirm(null)}
-                className="flex-1 py-2.5 rounded-lg text-sm text-[#bbcbb9] border border-[#3c4a3d] hover:border-[#25D366] hover:text-white transition-colors"
+                className="flex-1 py-2.5 rounded-lg text-sm text-zinc-400 border border-[#3c4a3d] hover:border-[#4FF07F] hover:text-white transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={() => handleDelete(deleteConfirm)}
-                className="flex-1 py-2.5 rounded-lg text-sm font-semibold bg-[#93000a] hover:bg-[#b91c1c] text-white transition-colors"
+                className="flex-1 py-2.5 rounded-lg text-sm font-semibold bg-[#93000a] hover:bg-red-800 text-white transition-colors"
               >
                 Excluir
               </button>
@@ -297,24 +278,18 @@ export default function ContactsClient({ initialGroups }: Props) {
         </div>
       )}
 
-      {/* Groups Manager Modal */}
       {showGroups && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
-          <div className="bg-[#1c1b1b] rounded-xl w-full max-w-md p-6 shadow-xl">
+          <div className="bg-[#1C1B1B] rounded-xl w-full max-w-md p-6 shadow-xl">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-white font-semibold text-lg" style={{ fontFamily: 'Manrope, sans-serif' }}>
-                Gerenciar grupos
-              </h2>
-              <button onClick={() => { setShowGroups(false); setEditGroup(null) }} className="text-[#bbcbb9] hover:text-white">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
-                  <path d="M18 6 6 18M6 6l12 12" />
-                </svg>
+              <h2 className="text-white font-semibold text-lg font-headline">Gerenciar grupos</h2>
+              <button onClick={() => { setShowGroups(false); setEditGroup(null) }} className="text-zinc-400 hover:text-white">
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Add / edit form */}
             <div className="bg-[#0e0e0e] rounded-lg p-4 mb-4">
-              <p className="text-xs text-[#bbcbb9] mb-3 font-medium">
+              <p className="text-xs text-zinc-400 mb-3 font-medium">
                 {editGroup ? 'Editando grupo' : 'Novo grupo'}
               </p>
               <div className="flex gap-2 mb-3">
@@ -326,11 +301,11 @@ export default function ContactsClient({ initialGroups }: Props) {
                       : setNewGroupName(e.target.value)
                   }
                   placeholder="Nome do grupo"
-                  className="flex-1 bg-[#1c1b1b] text-white rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-[#25D366] placeholder:text-[#3c4a3d]"
+                  className="flex-1 bg-[#1C1B1B] text-white rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-[#4FF07F] placeholder:text-zinc-600"
                 />
               </div>
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs text-[#bbcbb9]">Cor:</span>
+                <span className="text-xs text-zinc-400">Cor:</span>
                 <div className="flex gap-1.5">
                   {GROUP_COLORS.map((c) => {
                     const current = editGroup ? editGroup.color : newGroupColor
@@ -354,7 +329,7 @@ export default function ContactsClient({ initialGroups }: Props) {
                 {editGroup && (
                   <button
                     onClick={() => setEditGroup(null)}
-                    className="px-3 py-1.5 rounded-lg text-xs text-[#bbcbb9] border border-[#3c4a3d] hover:text-white transition-colors"
+                    className="px-3 py-1.5 rounded-lg text-xs text-zinc-400 border border-[#3c4a3d] hover:text-white transition-colors"
                   >
                     Cancelar
                   </button>
@@ -362,45 +337,36 @@ export default function ContactsClient({ initialGroups }: Props) {
                 <button
                   onClick={handleSaveGroup}
                   disabled={groupLoading || !(editGroup ? editGroup.name : newGroupName)}
-                  className="px-4 py-1.5 rounded-lg text-xs font-semibold text-[#003915] disabled:opacity-50"
-                  style={{ background: 'linear-gradient(135deg, #4FF07F 0%, #25D366 100%)' }}
+                  className="px-4 py-1.5 rounded-lg text-xs font-semibold text-[#003915] disabled:opacity-50 metric-gradient"
                 >
                   {groupLoading ? '...' : editGroup ? 'Salvar' : 'Adicionar'}
                 </button>
               </div>
             </div>
 
-            {/* Groups list */}
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {groups.length === 0 ? (
-                <p className="text-sm text-[#3c4a3d] text-center py-4">Nenhum grupo criado ainda</p>
+                <p className="text-sm text-zinc-600 text-center py-4">Nenhum grupo criado ainda</p>
               ) : (
                 groups.map((g) => (
                   <div key={g.id} className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-[#0e0e0e]">
                     <div className="flex items-center gap-2.5">
                       <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: g.color }} />
                       <span className="text-sm text-white">{g.name}</span>
-                      <span className="text-xs text-[#3c4a3d]">{g.member_count} contatos</span>
+                      <span className="text-xs text-zinc-600">{g.member_count} contatos</span>
                     </div>
                     <div className="flex gap-1">
                       <button
                         onClick={() => setEditGroup(g)}
-                        className="p-1 rounded text-[#bbcbb9] hover:text-white hover:bg-[#353534] transition-colors"
+                        className="p-1 rounded text-zinc-400 hover:text-white hover:bg-[#353534] transition-colors"
                       >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-3.5 h-3.5">
-                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                        </svg>
+                        <Edit2 className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleDeleteGroup(g.id)}
-                        className="p-1 rounded text-[#bbcbb9] hover:text-[#ffb4ab] hover:bg-[#93000a]/20 transition-colors"
+                        className="p-1 rounded text-zinc-400 hover:text-[#ffb4ab] hover:bg-[#93000a]/20 transition-colors"
                       >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-3.5 h-3.5">
-                          <polyline points="3 6 5 6 21 6" />
-                          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                          <path d="M10 11v6M14 11v6" />
-                        </svg>
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
